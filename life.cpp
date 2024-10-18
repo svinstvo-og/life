@@ -1,15 +1,87 @@
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
 
 using namespace std;
 
-enum cell {DEAD, ALIVE};
+int x_dim;
+int y_dim;
+int alive_proc;
+vector<vector<char>> field;
+vector<vector<char>> next_field;
 
-class Life {
-    
+int createField(int x_dim, int y_dim, int alive_proc) {
+    if (alive_proc > 100 || 0 > alive_proc) {
+        cout << "Alive % have to be in range of 0-100";
+        return 1;
+    }
+    field = vector<vector<char>>(x_dim);
+
+    for (int i=0; i < x_dim; i++) {
+        field[i] = vector<char>(y_dim);
+        for (int j=0; j < y_dim; j++) {
+            if (rand() % 100 < alive_proc) {
+                field[i][j] = '@';
+            }
+            else {
+                field[i][j] = '.';
+            }
+        }
+    }
+    return 0;
 }
 
-int main() {
-    
+int printField(vector<vector<char>> field, int x_dim, int y_dim) {
+    for (int i=0; i < x_dim; i++) {
+        for (int j=0; j < y_dim; j++) {
+            cout << field[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+
+int aliveArround(vector<vector<char>> field, int x_dim, int y_dim, int x_coord, int y_coord) {
+    int counter = 0;
+
+    for (int i = x_coord-1; i <= x_coord+1; i++) {
+        if (i < 0 || i > x_coord) {
+            continue;
+        }
+        else {
+            for (int j = y_coord-1; j <= y_coord+1; j++){
+                if (j < 0 || y_coord) {
+                    continue;
+                }
+                else {
+                    if (field[i][j] == '@') {
+                        counter++;
+                    }
+                }
+            }
+        }
+    }
+
+    return counter;
+}
+
+int updateField(vector<vector<char>> field, int x_dim, int y_dim) {
+    next_field = field;
+
+    return 0;
+}
+
+int main() {  
+    cout << "Enter size of X dimention, size of Y and % of alive cells in field: " << endl;
+    cin >> x_dim;
+    cin >> y_dim;
+    cin >> alive_proc;
+
+    createField(x_dim, y_dim, alive_proc);
+
+    printField(field, x_dim, y_dim);
+
+    int alive = aliveArround(field, x_dim, y_dim, 1, 1);
+    cout << alive;
     return 0;
 }
