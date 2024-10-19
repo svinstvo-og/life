@@ -110,9 +110,11 @@ int main() {
 
     createField(x_dim, y_dim, alive_proc);
 
+    aliveArround(field, x_dim, y_dim, x_dim, y_dim);
+
     //startSimulation(field, x_dim, y_dim);
 
-    updateField(field, x_dim, y_dim);
+    //updateField(field, x_dim, y_dim);
 
     return 0;
 }
