@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
@@ -41,27 +42,28 @@ int printField(vector<vector<char>> field, int x_dim, int y_dim) {
     return 0;
 }
 
-int aliveArround(vector<vector<char>> field, int x_dim, int y_dim, int x_coord, int y_coord) {
+int aliveArround(vector<vector<char>> field, int x_dim, int y_dim, int x_coord, int y_coord) { //DIM = dimention size, COORD = coordinate
     int counter = 0;
 
-    for (int i = x_coord-1; i <= x_coord+1; i++) {
-        if (i < 0 || i > x_coord) {
+    for (int i = x_coord-1; i < x_coord+2; i++) {
+        if (i < 0 || i > x_dim) {
             continue;
         }
         else {
-            for (int j = y_coord-1; j <= y_coord+1; j++){
-                if (j < 0 || y_coord) {
+            for (int j = y_coord-1; j < y_coord+2; j++){
+                if (j < 0 || y_dim < j) {
                     continue;
                 }
-                else {
-                    if (field[i][j] == '@') {
-                        counter++;
-                    }
+                if (i == x_coord && j == y_coord) {
+                    continue;
+                }
+                if (field[i][j] == '@') {
+                    counter++;
+                    //cout << "Found @ at " << i << j << endl;
                 }
             }
         }
     }
-
     return counter;
 }
 
@@ -72,16 +74,22 @@ int updateField(vector<vector<char>> field, int x_dim, int y_dim) {
 }
 
 int main() {  
+    srand(time(0));
+
     cout << "Enter size of X dimention, size of Y and % of alive cells in field: " << endl;
-    cin >> x_dim;
-    cin >> y_dim;
-    cin >> alive_proc;
+    ///cin >> x_dim;
+    ///cin >> y_dim;
+    ///cin >> alive_proc;
+
+    x_dim = 30;
+    y_dim = 30;
+    alive_proc = 10;
 
     createField(x_dim, y_dim, alive_proc);
 
     printField(field, x_dim, y_dim);
 
     int alive = aliveArround(field, x_dim, y_dim, 1, 1);
-    cout << alive;
+    cout << alive << endl;
     return 0;
 }
