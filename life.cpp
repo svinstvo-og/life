@@ -68,28 +68,51 @@ int aliveArround(vector<vector<char>> field, int x_dim, int y_dim, int x_coord, 
 }
 
 int updateField(vector<vector<char>> field, int x_dim, int y_dim) {
-    next_field = field;
+    int alive;
 
+    for (int i=0; i < x_dim; i++) {
+        for (int j=0; j < y_dim; j++) {
+            alive = aliveArround(field, x_dim, y_dim, i, j);
+            if (field[i][j] == '.' && alive == 3) { // rule 4
+                next_field[i][j] = '@';
+            }
+            else {
+                if (alive > 3 || alive < 2) { // rule 3 and 1
+                    field[i][j] = '.';
+                }
+            }
+        }
+    }
+
+    field = next_field;
     return 0;
+}
+
+void startSimulation(vector<vector<char>> field, int x_dim, int y_dim) {
+    for (int i=0; i < 10; i++) {
+        printField(field, x_dim, y_dim);
+        updateField(field, x_dim, y_dim);
+    }
 }
 
 int main() {  
     srand(time(0));
+    next_field = field;
 
-    cout << "Enter size of X dimention, size of Y and % of alive cells in field: " << endl;
+    //cout << "Enter size of X dimention, size of Y and % of alive cells in field: " << endl;
     ///cin >> x_dim;
     ///cin >> y_dim;
     ///cin >> alive_proc;
 
     x_dim = 30;
-    y_dim = 30;
+    y_dim = 60;
     alive_proc = 10;
 
     createField(x_dim, y_dim, alive_proc);
 
-    printField(field, x_dim, y_dim);
+    //startSimulation(field, x_dim, y_dim);
 
-    int alive = aliveArround(field, x_dim, y_dim, 1, 1);
-    cout << alive << endl;
+    updateField(field, x_dim, y_dim);
+
     return 0;
 }
