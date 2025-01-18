@@ -4,62 +4,77 @@
 #include <time.h>
 #include <chrono>
 #include <thread>
+#include "life.h"
 
 using namespace std;
 
-int x_dim;
-int y_dim;
-int alive_proc;
-vector<vector<char>> field;
-vector<vector<char>> next_field;
+Life::Life(int x_dim, int y_dim, int alive_proc) {
+    this->x_dim = x_dim;
+    this->y_dim = y_dim;
 
-int createField(int x_dim, int y_dim, int alive_proc) {
     if (alive_proc > 100 || 0 > alive_proc) {
-        cout << "Alive % have to be in range of 0-100";
-        return 1;
+        cout << "Alive % has to be in range of 0-100";
     }
-    field = vector<vector<char>>(x_dim);
+    else {
+        this->field = vector<vector<char>>(x_dim);
 
-    for (int i=0; i < x_dim; i++) {
-        field[i] = vector<char>(y_dim);
-        for (int j=0; j < y_dim; j++) {
-            if (rand() % 100 < alive_proc) {
-                field[i][j] = '@';
-            }
-            else {
-                field[i][j] = '.';
+        for (int i=0; i < x_dim; i++) {
+            this->field[i] = vector<char>(y_dim);
+            for (int j=0; j < y_dim; j++) {
+                if (rand() % 100 < alive_proc) {
+                    this->field[i][j] = '@';
+                }
+                else {
+                    this->field[i][j] = '.';
+                }
             }
         }
     }
-    return 0;
 }
 
-int printField(const vector<vector<char>>& field, int x_dim, int y_dim) {
-    for (int i=0; i < x_dim; i++) {
-        for (int j=0; j < y_dim; j++) {
-            cout << field[i][j] << " ";
+Life::Life() {
+    this->x_dim = 90;
+    this->y_dim = 160;
+    this->field = vector<vector<char>>(this->x_dim);
+
+        for (int i=0; i < this->x_dim; i++) {
+            this->field[i] = vector<char>(this->y_dim);
+            for (int j=0; j < this->y_dim; j++) {
+                if (rand() % 100 < 10) {
+                    this->field[i][j] = '@';
+                }
+                else {
+                    this->field[i][j] = '.';
+                }
+            }
+        }
+}
+
+void Life::printField() {
+    for (int i=0; i < this->x_dim; i++) {
+        for (int j=0; j < this->y_dim; j++) {
+            cout << this->field[i][j] << " ";
         }
         cout << endl;
     }
-    return 0;
 }
 
-int aliveArround(const vector<vector<char>>& field, int x_dim, int y_dim, int x_coord, int y_coord) { //DIM = dimention size, COORD = coordinate
+int Life::aliveArround(int x_coord, int y_coord) {
     int counter = 0;
 
     for (int i = x_coord-1; i < x_coord+2; i++) {
-        if (i < 0 || i >= x_dim) {
+        if (i < 0 || i >= this->x_dim) {
             continue;
         }
         else {
             for (int j = y_coord-1; j < y_coord+2; j++){
-                if (j < 0 || y_dim < j) {
+                if (j < 0 || this->y_dim < j) {
                     continue;
                 }
                 if (i == x_coord && j == y_coord) {
                     continue;
                 }
-                if (field[i][j] == '@') {
+                if (this->field[i][j] == '@') {
                     counter++;
                     //cout << "Found @ at " << i << j << endl;
                 }
@@ -69,14 +84,14 @@ int aliveArround(const vector<vector<char>>& field, int x_dim, int y_dim, int x_
     return counter;
 }
 
-int updateField(vector<vector<char>>& field, int x_dim, int y_dim) {
-    next_field = field;
+void Life::updateField() {
+    vector<vector<char>> next_field = this->field;
     int alive;
 
-    for (int i=0; i < x_dim; i++) {
+    for (int i=0; i < this->x_dim; i++) {
         for (int j=0; j < y_dim; j++) {
-            alive = aliveArround(field, x_dim, y_dim, i, j);
-            if (field[i][j] == '.' && alive == 3) { // rule 4
+            alive = aliveArround(i, j);
+            if (this->field[i][j] == '.' && alive == 3) { // rule 4
                 next_field.at(i).at(j) = '@';
             }
             else {
@@ -87,42 +102,29 @@ int updateField(vector<vector<char>>& field, int x_dim, int y_dim) {
         }
     }
 
-    field = next_field;
-    return 0;
+    this->field = move(next_field);
 }
 
-void startSimulation(vector<vector<char>>& field, int x_dim, int y_dim) {
+void Life::startSimulation() {
     while (true) {
         system("clear");
 
-        printField(field, x_dim, y_dim);
-        updateField(field, x_dim, y_dim);
+        Life::printField();
+        Life::updateField();
 
         this_thread::sleep_for(chrono::milliseconds(100));
     }
 }
 
 int main() {  
+
     srand(time(0));
-    next_field = field;
 
-    //cout << "Enter size of X dimention, size of Y and % of alive cells in field: " << endl;
-    ///cin >> x_dim;
-    ///cin >> y_dim;
-    ///cin >> alive_proc;
+    Life game = Life();
 
-    x_dim = 29;
-    y_dim = 60;
-    alive_proc = 10;
+    //game.printField();
 
-    createField(x_dim, y_dim, alive_proc);
-
-    //printField(field, x_dim, y_dim);
-    //cout << aliveArround(field, x_dim, y_dim, 0, 0);
-
-    startSimulation(field, x_dim, y_dim);
-
-    //cout << updateField(field, x_dim, y_dim);
+    game.startSimulation();
 
     return 0;
 }
